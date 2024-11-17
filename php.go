@@ -37,6 +37,21 @@ import (
 	"golang.org/x/text/cases"
 )
 
+func VarDump(v any) {
+	val := reflect.ValueOf(v)
+	typ := reflect.TypeOf(v)
+
+	fmt.Printf("%s (%s) = ", typ.Name(), typ.Kind())
+
+	switch val.Kind() {
+	case reflect.Struct, reflect.Map, reflect.Array, reflect.Slice:
+		data, _ := json.MarshalIndent(v, "", "  ")
+		fmt.Println(string(data))
+	default:
+		fmt.Println(val)
+	}
+}
+
 //////////// Date/Time Functions ////////////
 
 // Time time()
@@ -851,7 +866,7 @@ func Crc32(str string) uint32 {
 // costRep: Defines the cost of replacement.
 // costDel: Defines the cost of deletion.
 func Levenshtein(str1, str2 string, costIns, costRep, costDel int) int {
-	var maxLen = 255
+	maxLen := 255
 	l1 := len(str1)
 	l2 := len(str2)
 	if l1 == 0 {
@@ -1028,7 +1043,7 @@ func ParseURL(str string, component int) (map[string]string, error) {
 	if component == -1 {
 		component = 1 | 2 | 4 | 8 | 16 | 32 | 64 | 128
 	}
-	var components = make(map[string]string)
+	components := make(map[string]string)
 	if (component & 1) == 1 {
 		components["scheme"] = u.Scheme
 	}
@@ -1616,7 +1631,7 @@ func Copy(source, dest string) (bool, error) {
 		return false, err
 	}
 	defer fd1.Close()
-	fd2, err := os.OpenFile(dest, os.O_WRONLY|os.O_CREATE, 0644)
+	fd2, err := os.OpenFile(dest, os.O_WRONLY|os.O_CREATE, 0o644)
 	if err != nil {
 		return false, err
 	}
@@ -1655,7 +1670,7 @@ func Rename(oldname, newname string) error {
 
 // Touch touch()
 func Touch(filename string) (bool, error) {
-	fd, err := os.OpenFile(filename, os.O_RDONLY|os.O_CREATE, 0666)
+	fd, err := os.OpenFile(filename, os.O_RDONLY|os.O_CREATE, 0o666)
 	if err != nil {
 		return false, err
 	}
@@ -2190,7 +2205,7 @@ func VersionCompare(version1, version2, operator string) bool {
 		if l == 0 {
 			return ""
 		}
-		var buf = make([]byte, l*2)
+		buf := make([]byte, l*2)
 		j := 0
 		for i, v := range ver {
 			next := uint8(0)
